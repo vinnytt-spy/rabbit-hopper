@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Rabbit Hopper</title>
+    <title>Animal Hopper</title>
     <style>
         * {
             margin: 0;
@@ -21,6 +21,154 @@
             touch-action: none;
         }
         
+        #startScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+        
+        #startScreen.hidden {
+            display: none;
+        }
+        
+        .startContent {
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            color: #FFE4B5;
+            border: 4px solid #FFE4B5;
+            max-width: 500px;
+            width: 90%;
+            margin: 20px;
+        }
+        
+        .startContent h1 {
+            font-size: 32px;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .startContent h2 {
+            font-size: 20px;
+            margin: 20px 0 15px 0;
+            color: #FFD700;
+        }
+        
+        .animalGrid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .animalCard {
+            background: rgba(255, 228, 181, 0.2);
+            border: 3px solid #FFE4B5;
+            border-radius: 12px;
+            padding: 12px 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .animalCard:active {
+            transform: scale(0.95);
+        }
+        
+        .animalCard.selected {
+            background: #FFD700;
+            border-color: #FFA500;
+            color: #8B4513;
+            transform: scale(1.05);
+        }
+        
+        .animalCard .emoji {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+        
+        .animalCard .name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .animalCard .ability {
+            font-size: 11px;
+            font-style: italic;
+            line-height: 1.3;
+        }
+        
+        .difficultyGrid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .difficultyBtn {
+            background: rgba(255, 228, 181, 0.2);
+            border: 3px solid #FFE4B5;
+            border-radius: 10px;
+            padding: 12px 8px;
+            color: #FFE4B5;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .difficultyBtn:active {
+            transform: scale(0.95);
+        }
+        
+        .difficultyBtn.selected {
+            background: #FFD700;
+            border-color: #FFA500;
+            color: #8B4513;
+            transform: scale(1.05);
+        }
+        
+        .difficultyBtn .label {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .difficultyBtn .desc {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+        
+        #playBtn {
+            background: #FFE4B5;
+            color: #8B4513;
+            border: none;
+            padding: 15px 45px;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin-top: 10px;
+        }
+        
+        #playBtn:active {
+            transform: scale(0.95);
+        }
+        
+        #playBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         #gameContainer {
             display: flex;
             flex-direction: column;
@@ -33,16 +181,21 @@
         #scoreBoard {
             background: rgba(139, 69, 19, 0.9);
             color: #FFE4B5;
-            padding: 15px 25px;
+            padding: 12px 20px;
             border-radius: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             text-align: center;
-            font-size: 18px;
+            font-size: 16px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             width: 90%;
             max-width: 400px;
             display: flex;
             justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            margin: 4px 8px;
         }
         
         canvas {
@@ -57,18 +210,18 @@
         
         #controls {
             display: grid;
-            grid-template-columns: repeat(3, 80px);
-            grid-template-rows: repeat(3, 80px);
-            gap: 10px;
-            margin-top: 20px;
+            grid-template-columns: repeat(3, 70px);
+            grid-template-rows: repeat(3, 70px);
+            gap: 8px;
+            margin-top: 15px;
         }
         
         .control-btn {
             background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
             border: 3px solid #FFE4B5;
-            border-radius: 15px;
+            border-radius: 12px;
             color: #FFE4B5;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             cursor: pointer;
             user-select: none;
@@ -88,6 +241,12 @@
         #leftBtn { grid-column: 1; grid-row: 2; }
         #rightBtn { grid-column: 3; grid-row: 2; }
         #downBtn { grid-column: 2; grid-row: 3; }
+        #sprintBtn { 
+            grid-column: 2; 
+            grid-row: 2; 
+            background: linear-gradient(135deg, #FF6B6B 0%, #C92A2A 100%);
+            font-size: 18px;
+        }
         
         #gameOver {
             position: fixed;
@@ -108,7 +267,7 @@
         
         .gameOverContent {
             background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
-            padding: 40px;
+            padding: 35px;
             border-radius: 20px;
             text-align: center;
             color: #FFE4B5;
@@ -116,21 +275,21 @@
         }
         
         .gameOverContent h2 {
-            font-size: 36px;
-            margin-bottom: 20px;
+            font-size: 32px;
+            margin-bottom: 18px;
         }
         
         .gameOverContent p {
-            font-size: 24px;
-            margin-bottom: 30px;
+            font-size: 20px;
+            margin-bottom: 25px;
         }
         
         #restartBtn {
             background: #FFE4B5;
             color: #8B4513;
             border: none;
-            padding: 15px 40px;
-            font-size: 20px;
+            padding: 12px 35px;
+            font-size: 18px;
             font-weight: bold;
             border-radius: 10px;
             cursor: pointer;
@@ -143,11 +302,57 @@
     </style>
 </head>
 <body>
+    <!-- Start Screen -->
+    <div id="startScreen">
+        <div class="startContent">
+            <h1>🌲 ANIMAL HOPPER 🌲</h1>
+            
+            <h2>Choose Your Animal</h2>
+            <div class="animalGrid">
+                <div class="animalCard" data-animal="rabbit">
+                    <div class="emoji">🐰</div>
+                    <div class="name">Rabbit</div>
+                    <div class="ability">Balanced & Quick</div>
+                </div>
+                <div class="animalCard" data-animal="deer">
+                    <div class="emoji">🦌</div>
+                    <div class="name">Deer</div>
+                    <div class="ability">Super Fast Sprint</div>
+                </div>
+                <div class="animalCard" data-animal="coyote">
+                    <div class="emoji">🐺</div>
+                    <div class="name">Coyote</div>
+                    <div class="ability">Extra Lives</div>
+                </div>
+            </div>
+            
+            <h2>Select Difficulty</h2>
+            <div class="difficultyGrid">
+                <div class="difficultyBtn" data-difficulty="easy">
+                    <div class="label">🟢 EASY</div>
+                    <div class="desc">Slow traffic</div>
+                </div>
+                <div class="difficultyBtn" data-difficulty="medium">
+                    <div class="label">🟡 MEDIUM</div>
+                    <div class="desc">Normal speed</div>
+                </div>
+                <div class="difficultyBtn" data-difficulty="hard">
+                    <div class="label">🔴 HARD</div>
+                    <div class="desc">Fast chaos!</div>
+                </div>
+            </div>
+            
+            <button id="playBtn" disabled>START HOPPING!</button>
+        </div>
+    </div>
+    
+    <!-- Game Screen -->
     <div id="gameContainer">
         <div id="scoreBoard">
-            <div id="score">SCORE: 0</div>
-            <div id="lives">LIVES: ❤️❤️❤️</div>
-            <div id="level">LEVEL: 1</div>
+            <div class="stat" id="score">SCORE: 0</div>
+            <div class="stat" id="lives">LIVES: ❤️❤️❤️</div>
+            <div class="stat" id="level">LEVEL: 1</div>
+            <div class="stat" id="animalDisplay"></div>
         </div>
         
         <canvas id="gameCanvas" width="400" height="600"></canvas>
@@ -155,11 +360,13 @@
         <div id="controls">
             <button class="control-btn" id="upBtn">▲</button>
             <button class="control-btn" id="leftBtn">◄</button>
+            <button class="control-btn" id="sprintBtn">⚡</button>
             <button class="control-btn" id="rightBtn">►</button>
             <button class="control-btn" id="downBtn">▼</button>
         </div>
     </div>
     
+    <!-- Game Over Screen -->
     <div id="gameOver">
         <div class="gameOverContent">
             <h2>GAME OVER!</h2>
@@ -170,6 +377,75 @@
     </div>
     
     <script>
+        // Game variables
+        let selectedAnimal = null;
+        let selectedDifficulty = null;
+        let difficultyMultiplier = 1;
+        
+        // Animal stats
+        const animalStats = {
+            rabbit: {
+                emoji: '🐰',
+                lives: 3,
+                sprint: 1.5,
+                name: 'Rabbit'
+            },
+            deer: {
+                emoji: '🦌',
+                lives: 3,
+                sprint: 2.5, // Super fast
+                name: 'Deer'
+            },
+            coyote: {
+                emoji: '🐺',
+                lives: 5, // Extra lives
+                sprint: 1.3,
+                name: 'Coyote'
+            }
+        };
+        
+        // Difficulty settings
+        const difficultySettings = {
+            easy: 0.7,
+            medium: 1.0,
+            hard: 1.5
+        };
+        
+        // Start screen selection
+        document.querySelectorAll('.animalCard').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.animalCard').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedAnimal = this.dataset.animal;
+                checkCanStart();
+            });
+        });
+        
+        document.querySelectorAll('.difficultyBtn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.difficultyBtn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedDifficulty = this.dataset.difficulty;
+                difficultyMultiplier = difficultySettings[selectedDifficulty];
+                checkCanStart();
+            });
+        });
+        
+        function checkCanStart() {
+            const playBtn = document.getElementById('playBtn');
+            if (selectedAnimal && selectedDifficulty) {
+                playBtn.disabled = false;
+            }
+        }
+        
+        document.getElementById('playBtn').addEventListener('click', startGame);
+        
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            initializeGame();
+        }
+        
+        // Game code
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const gridSize = 40;
@@ -179,165 +455,95 @@
         let score = 0;
         let lives = 3;
         let level = 1;
-        let gameRunning = true;
+        let gameRunning = false;
+        let sprintActive = false;
+        let sprintCooldown = 0;
         
-        // Rabbit
-        let rabbit = {
-            x: 4,
-            y: 14,
-            size: 30
-        };
-        
-        // Cars (moving obstacles)
+        let animal = { x: 4, y: 14, size: 30, direction: 'up', crouching: false };
         let cars = [];
-        
-        // Logs (moving platforms on water)
         let logs = [];
+        let goals = [];
         
-        // Game lanes
         const lanes = [
-            { type: 'safe', y: 14 },      // Starting grass
+            { type: 'safe', y: 14 },
             { type: 'road', y: 13 },
             { type: 'road', y: 12 },
             { type: 'road', y: 11 },
-            { type: 'safe', y: 10 },      // Middle safe zone
+            { type: 'safe', y: 10 },
             { type: 'road', y: 9 },
             { type: 'road', y: 8 },
             { type: 'road', y: 7 },
-            { type: 'safe', y: 6 },       // River bank
+            { type: 'safe', y: 6 },
             { type: 'water', y: 5 },
             { type: 'water', y: 4 },
             { type: 'water', y: 3 },
             { type: 'water', y: 2 },
-            { type: 'safe', y: 1 },       // Goal grass
-            { type: 'goal', y: 0 }        // Carrot goals
+            { type: 'safe', y: 1 },
+            { type: 'goal', y: 0 }
         ];
         
-        // Goal spots (carrots)
-        let goals = [
-            { x: 1, reached: false },
-            { x: 3, reached: false },
-            { x: 5, reached: false },
-            { x: 7, reached: false },
-            { x: 9, reached: false }
-        ];
+        function initializeGame() {
+            const stats = animalStats[selectedAnimal];
+            lives = stats.lives;
+            
+            document.getElementById('animalDisplay').textContent = stats.emoji + ' ' + stats.name;
+            updateLives();
+            
+            goals = [
+                { x: 1, reached: false },
+                { x: 3, reached: false },
+                { x: 5, reached: false },
+                { x: 7, reached: false },
+                { x: 9, reached: false }
+            ];
+            
+            gameRunning = true;
+            initLevel();
+            gameLoop();
+        }
         
         function initLevel() {
             cars = [];
             logs = [];
             
-            const speed = 0.5 + (level * 0.2);
+            const speed = (0.5 + (level * 0.2)) * difficultyMultiplier;
             
-            // Row 13 - cars going right
+            // Cars
             for (let i = 0; i < 3; i++) {
-                cars.push({
-                    x: i * 4,
-                    y: 13,
-                    width: 1.5,
-                    speed: speed,
-                    color: '#FF0000'
-                });
+                cars.push({ x: i * 4, y: 13, width: 1.5, speed: speed, color: '#FF0000' });
             }
-            
-            // Row 12 - cars going left
             for (let i = 0; i < 3; i++) {
-                cars.push({
-                    x: i * 4,
-                    y: 12,
-                    width: 1.5,
-                    speed: -speed * 1.2,
-                    color: '#0000FF'
-                });
+                cars.push({ x: i * 4, y: 12, width: 1.5, speed: -speed * 1.2, color: '#0000FF' });
             }
-            
-            // Row 11 - cars going right (fast)
             for (let i = 0; i < 4; i++) {
-                cars.push({
-                    x: i * 3,
-                    y: 11,
-                    width: 1.2,
-                    speed: speed * 1.5,
-                    color: '#FFFF00'
-                });
+                cars.push({ x: i * 3, y: 11, width: 1.2, speed: speed * 1.5, color: '#FFFF00' });
             }
-            
-            // Row 9 - cars going left
             for (let i = 0; i < 3; i++) {
-                cars.push({
-                    x: i * 4,
-                    y: 9,
-                    width: 1.5,
-                    speed: -speed,
-                    color: '#FF00FF'
-                });
+                cars.push({ x: i * 4, y: 9, width: 1.5, speed: -speed, color: '#FF00FF' });
             }
-            
-            // Row 8 - cars going right
             for (let i = 0; i < 3; i++) {
-                cars.push({
-                    x: i * 4.5,
-                    y: 8,
-                    width: 1.5,
-                    speed: speed * 1.1,
-                    color: '#00FFFF'
-                });
+                cars.push({ x: i * 4.5, y: 8, width: 1.5, speed: speed * 1.1, color: '#00FFFF' });
             }
-            
-            // Row 7 - cars going left (fast)
             for (let i = 0; i < 4; i++) {
-                cars.push({
-                    x: i * 3,
-                    y: 7,
-                    width: 1.2,
-                    speed: -speed * 1.4,
-                    color: '#FFA500'
-                });
+                cars.push({ x: i * 3, y: 7, width: 1.2, speed: -speed * 1.4, color: '#FFA500' });
             }
             
-            // Logs in water
-            // Row 5 - logs going right
+            // Logs
             for (let i = 0; i < 3; i++) {
-                logs.push({
-                    x: i * 4,
-                    y: 5,
-                    width: 2.5,
-                    speed: speed * 0.8
-                });
+                logs.push({ x: i * 4, y: 5, width: 2.5, speed: speed * 0.8 });
             }
-            
-            // Row 4 - logs going left
             for (let i = 0; i < 2; i++) {
-                logs.push({
-                    x: i * 5,
-                    y: 4,
-                    width: 3,
-                    speed: -speed * 0.7
-                });
+                logs.push({ x: i * 5, y: 4, width: 3, speed: -speed * 0.7 });
             }
-            
-            // Row 3 - logs going right (fast)
             for (let i = 0; i < 3; i++) {
-                logs.push({
-                    x: i * 4,
-                    y: 3,
-                    width: 2,
-                    speed: speed * 1.2
-                });
+                logs.push({ x: i * 4, y: 3, width: 2, speed: speed * 1.2 });
             }
-            
-            // Row 2 - logs going left
             for (let i = 0; i < 2; i++) {
-                logs.push({
-                    x: i * 5,
-                    y: 2,
-                    width: 3.5,
-                    speed: -speed * 0.6
-                });
+                logs.push({ x: i * 5, y: 2, width: 3.5, speed: -speed * 0.6 });
             }
         }
         
         function drawBackground() {
-            // Draw lanes
             lanes.forEach(lane => {
                 let color;
                 switch(lane.type) {
@@ -346,11 +552,9 @@
                     case 'water': color = '#1E90FF'; break;
                     case 'goal': color = '#32CD32'; break;
                 }
-                
                 ctx.fillStyle = color;
                 ctx.fillRect(0, lane.y * gridSize, canvas.width, gridSize);
                 
-                // Road lines
                 if (lane.type === 'road') {
                     ctx.strokeStyle = '#FFFF00';
                     ctx.lineWidth = 2;
@@ -364,74 +568,282 @@
             });
         }
         
-        function drawRabbit() {
-            const x = rabbit.x * gridSize + gridSize / 2;
-            const y = rabbit.y * gridSize + gridSize / 2;
-            const size = rabbit.size / 2;
+        function drawAnimal() {
+            const x = animal.x * gridSize + gridSize / 2;
+            const y = animal.y * gridSize + gridSize / 2;
+            const size = animal.size / 2;
             
-            // Body (grey/white)
-            ctx.fillStyle = '#D3D3D3';
-            ctx.beginPath();
-            ctx.ellipse(x, y, size * 0.7, size, 0, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.save();
+            ctx.translate(x, y);
             
-            // Head
-            ctx.fillStyle = '#E0E0E0';
-            ctx.beginPath();
-            ctx.arc(x, y - size * 0.6, size * 0.6, 0, Math.PI * 2);
-            ctx.fill();
+            // Rotate based on direction
+            switch(animal.direction) {
+                case 'up': ctx.rotate(0); break;
+                case 'down': ctx.rotate(Math.PI); break;
+                case 'left': ctx.rotate(-Math.PI/2); break;
+                case 'right': ctx.rotate(Math.PI/2); break;
+            }
             
-            // Ears
-            ctx.fillStyle = '#D3D3D3';
-            ctx.beginPath();
-            ctx.ellipse(x - size * 0.3, y - size * 1.2, size * 0.2, size * 0.6, -0.3, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(x + size * 0.3, y - size * 1.2, size * 0.2, size * 0.6, 0.3, 0, Math.PI * 2);
-            ctx.fill();
+            // Crouch effect
+            const crouchOffset = animal.crouching ? 3 : 0;
             
-            // Inner ears (pink)
-            ctx.fillStyle = '#FFB6C1';
-            ctx.beginPath();
-            ctx.ellipse(x - size * 0.3, y - size * 1.2, size * 0.1, size * 0.4, -0.3, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(x + size * 0.3, y - size * 1.2, size * 0.1, size * 0.4, 0.3, 0, Math.PI * 2);
-            ctx.fill();
+            if (selectedAnimal === 'rabbit') {
+                // Rabbit body
+                ctx.fillStyle = '#D3D3D3';
+                ctx.beginPath();
+                ctx.ellipse(0, crouchOffset, size * 0.6, size * 0.9, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Head (forward lean when crouching)
+                ctx.fillStyle = '#E0E0E0';
+                ctx.beginPath();
+                ctx.arc(0, -size * 0.7 + crouchOffset, size * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Long ears pointing up
+                ctx.fillStyle = '#D3D3D3';
+                ctx.beginPath();
+                ctx.ellipse(-size * 0.2, -size * 1.3 + crouchOffset * 0.5, size * 0.15, size * 0.5, -0.2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(size * 0.2, -size * 1.3 + crouchOffset * 0.5, size * 0.15, size * 0.5, 0.2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Pink inner ears
+                ctx.fillStyle = '#FFB6C1';
+                ctx.beginPath();
+                ctx.ellipse(-size * 0.2, -size * 1.3 + crouchOffset * 0.5, size * 0.08, size * 0.3, -0.2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(size * 0.2, -size * 1.3 + crouchOffset * 0.5, size * 0.08, size * 0.3, 0.2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Front legs (crouched)
+                ctx.fillStyle = '#D3D3D3';
+                ctx.beginPath();
+                ctx.ellipse(-size * 0.3, size * 0.6 + crouchOffset, size * 0.15, size * 0.3, 0.3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(size * 0.3, size * 0.6 + crouchOffset, size * 0.15, size * 0.3, -0.3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Big back feet
+                ctx.fillStyle = '#C0C0C0';
+                ctx.beginPath();
+                ctx.ellipse(-size * 0.4, size * 1.1 + crouchOffset, size * 0.35, size * 0.2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(size * 0.4, size * 1.1 + crouchOffset, size * 0.35, size * 0.2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Eyes
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(-size * 0.15, -size * 0.8 + crouchOffset, size * 0.08, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(size * 0.15, -size * 0.8 + crouchOffset, size * 0.08, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Nose
+                ctx.fillStyle = '#FFC0CB';
+                ctx.beginPath();
+                ctx.arc(0, -size * 0.5 + crouchOffset, size * 0.1, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Cotton tail
+                ctx.fillStyle = '#FFF';
+                ctx.beginPath();
+                ctx.arc(0, size * 1.0 + crouchOffset, size * 0.25, 0, Math.PI * 2);
+                ctx.fill();
+                
+            } else if (selectedAnimal === 'deer') {
+                // Deer body - lean and muscular
+                ctx.fillStyle = '#8B4513';
+                ctx.beginPath();
+                ctx.ellipse(0, crouchOffset, size * 0.7, size * 1.0, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Chest (lighter brown)
+                ctx.fillStyle = '#D2691E';
+                ctx.beginPath();
+                ctx.ellipse(0, crouchOffset * 0.3, size * 0.45, size * 0.6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Head - sleek
+                ctx.fillStyle = '#8B4513';
+                ctx.beginPath();
+                ctx.ellipse(0, -size * 0.8 + crouchOffset, size * 0.4, size * 0.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Antlers
+                ctx.strokeStyle = '#654321';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                // Left antler
+                ctx.moveTo(-size * 0.3, -size * 1.2 + crouchOffset * 0.5);
+                ctx.lineTo(-size * 0.4, -size * 1.6 + crouchOffset * 0.5);
+                ctx.moveTo(-size * 0.35, -size * 1.4 + crouchOffset * 0.5);
+                ctx.lineTo(-size * 0.5, -size * 1.5 + crouchOffset * 0.5);
+                // Right antler
+                ctx.moveTo(size * 0.3, -size * 1.2 + crouchOffset * 0.5);
+                ctx.lineTo(size * 0.4, -size * 1.6 + crouchOffset * 0.5);
+                ctx.moveTo(size * 0.35, -size * 1.4 + crouchOffset * 0.5);
+                ctx.lineTo(size * 0.5, -size * 1.5 + crouchOffset * 0.5);
+                ctx.stroke();
+                
+                // Long muscular legs
+                ctx.fillStyle = '#A0522D';
+                ctx.fillRect(-size * 0.4, size * 0.4 + crouchOffset, size * 0.15, size * 0.8);
+                ctx.fillRect(size * 0.25, size * 0.4 + crouchOffset, size * 0.15, size * 0.8);
+                
+                // Hooves
+                ctx.fillStyle = '#000';
+                ctx.fillRect(-size * 0.4, size * 1.15 + crouchOffset, size * 0.15, size * 0.15);
+                ctx.fillRect(size * 0.25, size * 1.15 + crouchOffset, size * 0.15, size * 0.15);
+                
+                // Eyes
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(-size * 0.1, -size * 0.85 + crouchOffset, size * 0.08, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(size * 0.1, -size * 0.85 + crouchOffset, size * 0.08, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Nose
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(0, -size * 0.55 + crouchOffset, size * 0.1, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // White tail
+                ctx.fillStyle = '#FFF';
+                ctx.beginPath();
+                ctx.moveTo(0, size * 1.0 + crouchOffset);
+                ctx.lineTo(-size * 0.15, size * 1.2 + crouchOffset);
+                ctx.lineTo(size * 0.15, size * 1.2 + crouchOffset);
+                ctx.closePath();
+                ctx.fill();
+                
+            } else if (selectedAnimal === 'coyote') {
+                // Coyote body - predator stance
+                ctx.fillStyle = '#C19A6B';
+                ctx.beginPath();
+                ctx.ellipse(0, crouchOffset, size * 0.7, size * 0.95, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Underbelly (lighter)
+                ctx.fillStyle = '#E8D5B9';
+                ctx.beginPath();
+                ctx.ellipse(0, crouchOffset * 0.5, size * 0.4, size * 0.6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Head - wolf-like
+                ctx.fillStyle = '#C19A6B';
+                ctx.beginPath();
+                ctx.ellipse(0, -size * 0.75 + crouchOffset, size * 0.5, size * 0.55, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Snout
+                ctx.fillStyle = '#A0826D';
+                ctx.beginPath();
+                ctx.ellipse(0, -size * 0.4 + crouchOffset, size * 0.25, size * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Pointed ears
+                ctx.fillStyle = '#C19A6B';
+                ctx.beginPath();
+                ctx.moveTo(-size * 0.35, -size * 1.1 + crouchOffset * 0.5);
+                ctx.lineTo(-size * 0.5, -size * 1.5 + crouchOffset * 0.5);
+                ctx.lineTo(-size * 0.2, -size * 1.0 + crouchOffset * 0.5);
+                ctx.closePath();
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(size * 0.35, -size * 1.1 + crouchOffset * 0.5);
+                ctx.lineTo(size * 0.5, -size * 1.5 + crouchOffset * 0.5);
+                ctx.lineTo(size * 0.2, -size * 1.0 + crouchOffset * 0.5);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Inner ears (darker)
+                ctx.fillStyle = '#8B7355';
+                ctx.beginPath();
+                ctx.moveTo(-size * 0.35, -size * 1.1 + crouchOffset * 0.5);
+                ctx.lineTo(-size * 0.45, -size * 1.4 + crouchOffset * 0.5);
+                ctx.lineTo(-size * 0.28, -size * 1.05 + crouchOffset * 0.5);
+                ctx.closePath();
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(size * 0.35, -size * 1.1 + crouchOffset * 0.5);
+                ctx.lineTo(size * 0.45, -size * 1.4 + crouchOffset * 0.5);
+                ctx.lineTo(size * 0.28, -size * 1.05 + crouchOffset * 0.5);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Legs - strong and ready to pounce
+                ctx.fillStyle = '#A0826D';
+                ctx.fillRect(-size * 0.4, size * 0.5 + crouchOffset, size * 0.15, size * 0.7);
+                ctx.fillRect(size * 0.25, size * 0.5 + crouchOffset, size * 0.15, size * 0.7);
+                
+                // Paws
+                ctx.fillStyle = '#654321';
+                ctx.beginPath();
+                ctx.ellipse(-size * 0.325, size * 1.15 + crouchOffset, size * 0.12, size * 0.1, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(size * 0.325, size * 1.15 + crouchOffset, size * 0.12, size * 0.1, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Eyes - intense yellow
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(-size * 0.15, -size * 0.8 + crouchOffset, size * 0.1, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(size * 0.15, -size * 0.8 + crouchOffset, size * 0.1, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Pupils
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(-size * 0.15, -size * 0.8 + crouchOffset, size * 0.05, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(size * 0.15, -size * 0.8 + crouchOffset, size * 0.05, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Black nose
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(0, -size * 0.25 + crouchOffset, size * 0.1, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Bushy tail
+                ctx.fillStyle = '#C19A6B';
+                ctx.beginPath();
+                ctx.ellipse(0, size * 1.1 + crouchOffset, size * 0.3, size * 0.35, 0.3, 0, Math.PI * 2);
+                ctx.fill();
+                // Tail tip (darker)
+                ctx.fillStyle = '#654321';
+                ctx.beginPath();
+                ctx.ellipse(size * 0.1, size * 1.3 + crouchOffset, size * 0.15, size * 0.2, 0.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
             
-            // Eyes
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            ctx.arc(x - size * 0.2, y - size * 0.7, size * 0.1, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(x + size * 0.2, y - size * 0.7, size * 0.1, 0, Math.PI * 2);
-            ctx.fill();
+            // Sprint glow effect
+            if (sprintActive) {
+                ctx.strokeStyle = '#FFD700';
+                ctx.lineWidth = 4;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(0, 0, size * 1.3, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
             
-            // Nose
-            ctx.fillStyle = '#FFC0CB';
-            ctx.beginPath();
-            ctx.arc(x, y - size * 0.4, size * 0.1, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Whiskers
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(x - size * 0.3, y - size * 0.4);
-            ctx.lineTo(x - size * 0.6, y - size * 0.4);
-            ctx.moveTo(x + size * 0.3, y - size * 0.4);
-            ctx.lineTo(x + size * 0.6, y - size * 0.4);
-            ctx.stroke();
-            
-            // Feet
-            ctx.fillStyle = '#D3D3D3';
-            ctx.beginPath();
-            ctx.ellipse(x - size * 0.3, y + size * 0.8, size * 0.3, size * 0.2, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(x + size * 0.3, y + size * 0.8, size * 0.3, size * 0.2, 0, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.restore();
         }
         
         function drawCars() {
@@ -441,15 +853,10 @@
                 const width = car.width * gridSize;
                 const height = gridSize - 10;
                 
-                // Car body
                 ctx.fillStyle = car.color;
                 ctx.fillRect(x, y, width, height);
-                
-                // Car windows
                 ctx.fillStyle = '#87CEEB';
                 ctx.fillRect(x + width * 0.2, y + 5, width * 0.6, height * 0.4);
-                
-                // Wheels
                 ctx.fillStyle = '#000';
                 ctx.beginPath();
                 ctx.arc(x + width * 0.2, y + height - 3, 5, 0, Math.PI * 2);
@@ -467,11 +874,8 @@
                 const width = log.width * gridSize;
                 const height = gridSize - 10;
                 
-                // Log
                 ctx.fillStyle = '#8B4513';
                 ctx.fillRect(x, y, width, height);
-                
-                // Wood rings
                 ctx.strokeStyle = '#654321';
                 ctx.lineWidth = 2;
                 for (let i = 1; i < log.width; i++) {
@@ -488,18 +892,14 @@
                 const y = 0 * gridSize + gridSize / 2;
                 
                 if (goal.reached) {
-                    // Show rabbit reached this spot
                     ctx.fillStyle = '#90EE90';
                     ctx.beginPath();
                     ctx.arc(x, y, 15, 0, Math.PI * 2);
                     ctx.fill();
-                    
-                    ctx.fillStyle = '#000';
                     ctx.font = '20px Arial';
                     ctx.textAlign = 'center';
-                    ctx.fillText('🐰', x, y + 7);
+                    ctx.fillText(animalStats[selectedAnimal].emoji, x, y + 7);
                 } else {
-                    // Draw carrot
                     ctx.fillStyle = '#FF8C00';
                     ctx.beginPath();
                     ctx.moveTo(x, y - 10);
@@ -507,8 +907,6 @@
                     ctx.lineTo(x + 5, y + 10);
                     ctx.closePath();
                     ctx.fill();
-                    
-                    // Carrot top
                     ctx.fillStyle = '#228B22';
                     ctx.beginPath();
                     ctx.moveTo(x - 3, y - 10);
@@ -527,94 +925,89 @@
         function moveCars() {
             cars.forEach(car => {
                 car.x += car.speed * 0.05;
-                
-                // Wrap around
-                if (car.speed > 0 && car.x > cols + 2) {
-                    car.x = -car.width;
-                } else if (car.speed < 0 && car.x < -car.width - 2) {
-                    car.x = cols;
-                }
+                if (car.speed > 0 && car.x > cols + 2) car.x = -car.width;
+                else if (car.speed < 0 && car.x < -car.width - 2) car.x = cols;
             });
         }
         
         function moveLogs() {
             logs.forEach(log => {
                 log.x += log.speed * 0.05;
-                
-                // Wrap around
-                if (log.speed > 0 && log.x > cols + 2) {
-                    log.x = -log.width;
-                } else if (log.speed < 0 && log.x < -log.width - 2) {
-                    log.x = cols;
-                }
+                if (log.speed > 0 && log.x > cols + 2) log.x = -log.width;
+                else if (log.speed < 0 && log.x < -log.width - 2) log.x = cols;
             });
         }
         
-        function moveRabbit(dx, dy) {
-            const newX = rabbit.x + dx;
-            const newY = rabbit.y + dy;
+        function moveAnimal(dx, dy) {
+            // Update direction based on movement
+            if (dx > 0) animal.direction = 'right';
+            else if (dx < 0) animal.direction = 'left';
+            else if (dy > 0) animal.direction = 'down';
+            else if (dy < 0) animal.direction = 'up';
+            
+            // Crouch animation
+            animal.crouching = true;
+            setTimeout(() => { animal.crouching = false; }, 150);
+            
+            const multiplier = sprintActive ? animalStats[selectedAnimal].sprint : 1;
+            const actualDx = dx * multiplier;
+            const actualDy = dy * multiplier;
+            
+            const newX = animal.x + actualDx;
+            const newY = animal.y + actualDy;
             
             if (newX >= 0 && newX < cols && newY >= 0 && newY < rows) {
-                rabbit.x = newX;
-                rabbit.y = newY;
+                animal.x = newX;
+                animal.y = newY;
                 
-                // Forward progress score
                 if (dy < 0) {
                     score += 10;
                     document.getElementById('score').textContent = 'SCORE: ' + score;
                 }
             }
+            
+            if (sprintActive) {
+                sprintActive = false;
+                sprintCooldown = 60;
+            }
         }
         
         function checkCollisions() {
-            // Check if rabbit is on water
-            const currentLane = lanes.find(lane => lane.y === rabbit.y);
+            const currentLane = lanes.find(lane => lane.y === Math.round(animal.y));
             
             if (currentLane && currentLane.type === 'water') {
-                // Check if on a log
                 let onLog = false;
                 logs.forEach(log => {
-                    if (log.y === rabbit.y) {
+                    if (Math.abs(log.y - animal.y) < 0.5) {
                         const logLeft = log.x;
                         const logRight = log.x + log.width;
-                        
-                        if (rabbit.x >= logLeft - 0.5 && rabbit.x <= logRight - 0.5) {
+                        if (animal.x >= logLeft - 0.5 && animal.x <= logRight - 0.5) {
                             onLog = true;
-                            // Move with the log
-                            rabbit.x += log.speed * 0.05;
-                            
-                            // Don't let rabbit go off screen while on log
-                            if (rabbit.x < 0) rabbit.x = 0;
-                            if (rabbit.x >= cols) rabbit.x = cols - 1;
+                            animal.x += log.speed * 0.05;
+                            if (animal.x < 0) animal.x = 0;
+                            if (animal.x >= cols) animal.x = cols - 1;
                         }
                     }
                 });
-                
-                if (!onLog) {
-                    // Fell in water!
-                    loseLife();
-                }
+                if (!onLog) loseLife();
             }
             
-            // Check car collisions
             if (currentLane && currentLane.type === 'road') {
                 cars.forEach(car => {
-                    if (car.y === rabbit.y) {
+                    if (Math.abs(car.y - animal.y) < 0.5) {
                         const carLeft = car.x;
                         const carRight = car.x + car.width;
-                        
-                        if (rabbit.x >= carLeft - 0.3 && rabbit.x <= carRight - 0.7) {
+                        if (animal.x >= carLeft - 0.3 && animal.x <= carRight - 0.7) {
                             loseLife();
                         }
                     }
                 });
             }
             
-            // Check if reached goal
-            if (rabbit.y === 0) {
+            if (Math.round(animal.y) === 0) {
                 let reachedGoal = false;
                 goals.forEach(goal => {
-                    if (Math.abs(rabbit.x - goal.x) < 0.5 && !goal.reached) {
+                    if (Math.abs(animal.x - goal.x) < 0.5 && !goal.reached) {
                         goal.reached = true;
                         score += 100;
                         reachedGoal = true;
@@ -623,15 +1016,12 @@
                 
                 if (reachedGoal) {
                     document.getElementById('score').textContent = 'SCORE: ' + score;
-                    
-                    // Check if all goals reached
                     if (goals.every(g => g.reached)) {
                         nextLevel();
                     } else {
-                        resetRabbit();
+                        resetAnimal();
                     }
                 } else {
-                    // Hit the wall
                     loseLife();
                 }
             }
@@ -640,29 +1030,22 @@
         function loseLife() {
             lives--;
             updateLives();
-            
-            if (lives <= 0) {
-                endGame();
-            } else {
-                resetRabbit();
-            }
+            if (lives <= 0) endGame();
+            else resetAnimal();
         }
         
-        function resetRabbit() {
-            rabbit.x = 4;
-            rabbit.y = 14;
+        function resetAnimal() {
+            animal.x = 4;
+            animal.y = 14;
         }
         
         function nextLevel() {
             level++;
             document.getElementById('level').textContent = 'LEVEL: ' + level;
-            score += 500; // Bonus for completing level
+            score += 500;
             document.getElementById('score').textContent = 'SCORE: ' + score;
-            
-            // Reset goals
             goals.forEach(g => g.reached = false);
-            
-            resetRabbit();
+            resetAnimal();
             initLevel();
         }
         
@@ -687,90 +1070,68 @@
             drawGoals();
             drawLogs();
             drawCars();
-            drawRabbit();
+            drawAnimal();
             
             moveCars();
             moveLogs();
             checkCollisions();
+            
+            if (sprintCooldown > 0) sprintCooldown--;
             
             requestAnimationFrame(gameLoop);
         }
         
         // Controls
         function hop(dx, dy) {
-            moveRabbit(dx, dy);
+            moveAnimal(dx, dy);
+        }
+        
+        function activateSprint() {
+            if (sprintCooldown === 0) {
+                sprintActive = true;
+            }
         }
         
         document.getElementById('upBtn').addEventListener('touchstart', (e) => {
             e.preventDefault();
             hop(0, -1);
         });
-        
         document.getElementById('downBtn').addEventListener('touchstart', (e) => {
             e.preventDefault();
             hop(0, 1);
         });
-        
         document.getElementById('leftBtn').addEventListener('touchstart', (e) => {
             e.preventDefault();
             hop(-1, 0);
         });
-        
         document.getElementById('rightBtn').addEventListener('touchstart', (e) => {
             e.preventDefault();
             hop(1, 0);
         });
-        
-        // Click events for desktop
-        document.getElementById('upBtn').addEventListener('click', (e) => {
+        document.getElementById('sprintBtn').addEventListener('touchstart', (e) => {
             e.preventDefault();
-            hop(0, -1);
+            activateSprint();
         });
         
-        document.getElementById('downBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            hop(0, 1);
-        });
+        document.getElementById('upBtn').addEventListener('click', () => hop(0, -1));
+        document.getElementById('downBtn').addEventListener('click', () => hop(0, 1));
+        document.getElementById('leftBtn').addEventListener('click', () => hop(-1, 0));
+        document.getElementById('rightBtn').addEventListener('click', () => hop(1, 0));
+        document.getElementById('sprintBtn').addEventListener('click', activateSprint);
         
-        document.getElementById('leftBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            hop(-1, 0);
-        });
-        
-        document.getElementById('rightBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            hop(1, 0);
-        });
-        
-        // Keyboard controls
         document.addEventListener('keydown', (e) => {
             switch(e.key) {
-                case 'ArrowUp':
-                    e.preventDefault();
-                    hop(0, -1);
-                    break;
-                case 'ArrowDown':
-                    e.preventDefault();
-                    hop(0, 1);
-                    break;
-                case 'ArrowLeft':
-                    e.preventDefault();
-                    hop(-1, 0);
-                    break;
-                case 'ArrowRight':
-                    e.preventDefault();
-                    hop(1, 0);
-                    break;
+                case 'ArrowUp': e.preventDefault(); hop(0, -1); break;
+                case 'ArrowDown': e.preventDefault(); hop(0, 1); break;
+                case 'ArrowLeft': e.preventDefault(); hop(-1, 0); break;
+                case 'ArrowRight': e.preventDefault(); hop(1, 0); break;
+                case ' ': e.preventDefault(); activateSprint(); break;
             }
         });
         
         document.getElementById('restartBtn').addEventListener('click', () => {
             location.reload();
         });
-        
-        // Initialize and start
-        initLevel();
-        gameLoop();
     </script>
 </body>
 </html>
