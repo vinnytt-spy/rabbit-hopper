@@ -588,73 +588,73 @@
             const crouchOffset = animal.crouching ? 3 : 0;
             
             if (selectedAnimal === 'rabbit') {
-                // Rabbit body
+                // Rabbit body - very compact and round
                 ctx.fillStyle = '#D3D3D3';
                 ctx.beginPath();
-                ctx.ellipse(0, crouchOffset, size * 0.6, size * 0.9, 0, 0, Math.PI * 2);
+                ctx.ellipse(0, crouchOffset, size * 0.55, size * 0.25, 0, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Head (forward lean when crouching)
+                // Head - closer to body
                 ctx.fillStyle = '#E0E0E0';
                 ctx.beginPath();
-                ctx.arc(0, -size * 0.7 + crouchOffset, size * 0.5, 0, Math.PI * 2);
+                ctx.arc(0, -size * 0.3 + crouchOffset, size * 0.45, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Long ears pointing up
+                // Shorter ears pointing up
                 ctx.fillStyle = '#D3D3D3';
                 ctx.beginPath();
-                ctx.ellipse(-size * 0.2, -size * 1.3 + crouchOffset * 0.5, size * 0.15, size * 0.5, -0.2, 0, Math.PI * 2);
+                ctx.ellipse(-size * 0.18, -size * 0.75 + crouchOffset * 0.5, size * 0.12, size * 0.35, -0.15, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.beginPath();
-                ctx.ellipse(size * 0.2, -size * 1.3 + crouchOffset * 0.5, size * 0.15, size * 0.5, 0.2, 0, Math.PI * 2);
+                ctx.ellipse(size * 0.18, -size * 0.75 + crouchOffset * 0.5, size * 0.12, size * 0.35, 0.15, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Pink inner ears
+                // Pink inner ears - smaller
                 ctx.fillStyle = '#FFB6C1';
                 ctx.beginPath();
-                ctx.ellipse(-size * 0.2, -size * 1.3 + crouchOffset * 0.5, size * 0.08, size * 0.3, -0.2, 0, Math.PI * 2);
+                ctx.ellipse(-size * 0.18, -size * 0.75 + crouchOffset * 0.5, size * 0.06, size * 0.2, -0.15, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.beginPath();
-                ctx.ellipse(size * 0.2, -size * 1.3 + crouchOffset * 0.5, size * 0.08, size * 0.3, 0.2, 0, Math.PI * 2);
+                ctx.ellipse(size * 0.18, -size * 0.75 + crouchOffset * 0.5, size * 0.06, size * 0.2, 0.15, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Front legs (crouched)
+                // Compact front legs
                 ctx.fillStyle = '#D3D3D3';
                 ctx.beginPath();
-                ctx.ellipse(-size * 0.3, size * 0.6 + crouchOffset, size * 0.15, size * 0.3, 0.3, 0, Math.PI * 2);
+                ctx.ellipse(-size * 0.25, size * 0.3 + crouchOffset, size * 0.12, size * 0.2, 0.2, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.beginPath();
-                ctx.ellipse(size * 0.3, size * 0.6 + crouchOffset, size * 0.15, size * 0.3, -0.3, 0, Math.PI * 2);
+                ctx.ellipse(size * 0.25, size * 0.3 + crouchOffset, size * 0.12, size * 0.2, -0.2, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Big back feet
+                // Smaller back feet
                 ctx.fillStyle = '#C0C0C0';
                 ctx.beginPath();
-                ctx.ellipse(-size * 0.4, size * 1.1 + crouchOffset, size * 0.35, size * 0.2, 0, 0, Math.PI * 2);
+                ctx.ellipse(-size * 0.35, size * 0.55 + crouchOffset, size * 0.28, size * 0.15, 0, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.beginPath();
-                ctx.ellipse(size * 0.4, size * 1.1 + crouchOffset, size * 0.35, size * 0.2, 0, 0, Math.PI * 2);
+                ctx.ellipse(size * 0.35, size * 0.55 + crouchOffset, size * 0.28, size * 0.15, 0, 0, Math.PI * 2);
                 ctx.fill();
                 
                 // Eyes
                 ctx.fillStyle = '#000';
                 ctx.beginPath();
-                ctx.arc(-size * 0.15, -size * 0.8 + crouchOffset, size * 0.08, 0, Math.PI * 2);
+                ctx.arc(-size * 0.13, -size * 0.35 + crouchOffset, size * 0.07, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.beginPath();
-                ctx.arc(size * 0.15, -size * 0.8 + crouchOffset, size * 0.08, 0, Math.PI * 2);
+                ctx.arc(size * 0.13, -size * 0.35 + crouchOffset, size * 0.07, 0, Math.PI * 2);
                 ctx.fill();
                 
                 // Nose
                 ctx.fillStyle = '#FFC0CB';
                 ctx.beginPath();
-                ctx.arc(0, -size * 0.5 + crouchOffset, size * 0.1, 0, Math.PI * 2);
+                ctx.arc(0, -size * 0.15 + crouchOffset, size * 0.08, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Cotton tail
+                // Small cotton tail
                 ctx.fillStyle = '#FFF';
                 ctx.beginPath();
-                ctx.arc(0, size * 1.0 + crouchOffset, size * 0.25, 0, Math.PI * 2);
+                ctx.arc(0, size * 0.5 + crouchOffset, size * 0.2, 0, Math.PI * 2);
                 ctx.fill();
                 
             } else if (selectedAnimal === 'deer') {
@@ -939,11 +939,13 @@
         }
         
         function moveAnimal(dx, dy) {
-            // Update direction based on movement
-            if (dx > 0) animal.direction = 'right';
-            else if (dx < 0) animal.direction = 'left';
-            else if (dy > 0) animal.direction = 'down';
+            // Update direction - only change for up/down movement
+            if (dy > 0) animal.direction = 'down';
             else if (dy < 0) animal.direction = 'up';
+            // Keep facing up (north) for left/right movement
+            else if (dx !== 0 && animal.direction !== 'up' && animal.direction !== 'down') {
+                animal.direction = 'up';
+            }
             
             // Crouch animation
             animal.crouching = true;
